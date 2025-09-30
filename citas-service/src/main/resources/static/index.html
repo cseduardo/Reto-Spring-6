@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Citas</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        #citas-container {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+
+        th.acciones-column,
+        td.acciones-column {
+            width: 220px;
+            text-align: center;
+        }
+
+        .cliente-link {
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #no-citas-mensaje {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .add-cita-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        #form-container {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .action-select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .filter-status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .show-all-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form h2 {
+            margin-top: 0;
+        }
+
+        form button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        #mensaje-form {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .exito {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="fixed-header">
+        <div class="header-title">Panel de Citas</div>
+        <form action="/logout" method="post"><button type="submit" class="logout-button">Cerrar Sesión</button></form>
+    </header>
+
+    <div class="container">
+        <div id="filter-status" class="filter-status">
+            <span id="filter-text"></span>
+            <button id="show-all-btn" class="show-all-btn">Mostrar Todas</button>
+        </div>
+
+        <div id="citas-container">
+            <button class="add-cita-btn" onclick="mostrarFormulario()">+ Agregar Nueva Cita</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Correo</th>
+                        <th>Fecha y Hora</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                        <th class="acciones-column">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="citas-tabla-body"></tbody>
+            </table>
+        </div>
+        <div id="no-citas-mensaje">
+            <p>Aún no hay citas registradas para esta vista.</p>
+            <button class="add-cita-btn" onclick="mostrarFormulario()">+ Agregar Cita</button>
+        </div>
+        <div id="form-container">
+            <form id="citaForm">
+                <h2>Datos del Cliente</h2>
+                <input type="text" id="nombre" placeholder="Nombre" required>
+                <input type="text" id="apellidos" placeholder="Apellidos" required>
+                <input type="email" id="correo" placeholder="Correo Electrónico" required>
+                <input type="tel" id="telefono" placeholder="Teléfono">
+                <input type="text" id="direccion" placeholder="Dirección">
+                <h2>Datos de la Cita</h2>
+                <input type="datetime-local" id="fechaHora" required>
+                <input type="text" id="motivo" placeholder="Motivo de la cita" required>
+                <button type="submit">Guardar Cita</button>
+            </form>
+            <div id="mensaje-form"></div>
+        </div>
+    </div>
+
+    <script>
+        const citasContainer = document.getElementById('citas-container');
+        const noCitasMensaje = document.getElementById('no-citas-mensaje');
+        const citasTablaBody = document.getElementById('citas-tabla-body');
+        const filterStatusDiv = document.getElementById('filter-status');
+        const filterTextSpan = document.getElementById('filter-text');
+        const showAllBtn = document.getElementById('show-all-btn');
+        const formContainer = document.getElementById('form-container');
+        const citaForm = document.getElementById('citaForm');
+        const fechaHoraInput = document.getElementById('fechaHora');
+
+        let currentApiUrl = '/api/citas';
+        async function cargarCitas(url = '/api/citas') {
+            currentApiUrl = url;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Error al cargar las citas.');
+                const citas = await response.json();
+                citasTablaBody.innerHTML = '';
+                if (citas.length > 0) {
+                    citasContainer.style.display = 'block';
+                    noCitasMensaje.style.display = 'none';
+                    citas.forEach(cita => {
+                        const fechaFormateada = new Date(cita.fechaHora).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' });
+                        const opcionesEstado = ['PENDIENTE', 'COMPLETADA', 'CANCELADA']
+                            .map(estado => `<option value="${estado}" ${cita.estado === estado ? 'selected' : ''}>${estado}</option>`).join('');
+                        const fila = `<tr>
+                            <td><a href="#" class="cliente-link" onclick="filtrarPorCliente(${cita.cliente.id}, '${cita.cliente.nombre} ${cita.cliente.apellidos}')">${cita.cliente.nombre} ${cita.cliente.apellidos}</a></td>
+                            <td>${cita.cliente.correo}</td><td>${fechaFormateada}</td><td>${cita.motivo}</td><td>${cita.estado}</td>
+                            <td class="acciones-column">
+                                <select class="action-select" onchange="actualizarEstado(${cita.id}, this.value)">${opcionesEstado}</select>
+                                <button class="delete-btn" onclick="eliminarCita(${cita.id})">Eliminar</button>
+                            </td></tr>`;
+                        citasTablaBody.innerHTML += fila;
+                    });
+                } else {
+                    citasContainer.style.display = 'none';
+                    noCitasMensaje.style.display = 'block';
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        async function actualizarEstado(citaId, nuevoEstado) {
+            if (!confirm(`¿Seguro que quieres cambiar el estado a "${nuevoEstado}"?`)) return;
+            try {
+                const response = await fetch(`/api/citas/${citaId}`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: nuevoEstado })
+                });
+                if (response.ok) { await cargarCitas(currentApiUrl); } else { alert('Error al actualizar el estado.'); }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        async function eliminarCita(citaId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esta cita?')) return;
+            try {
+                const response = await fetch(`/api/citas/${citaId}`, { method: 'DELETE' });
+                if (response.ok) { await cargarCitas(currentApiUrl); } else { alert('Error al eliminar la cita.'); }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function filtrarPorCliente(clienteId, nombreCliente) {
+            filterStatusDiv.style.display = 'flex';
+            filterTextSpan.textContent = `Mostrando citas de: ${nombreCliente}`;
+            cargarCitas(`/api/citas/cliente/${clienteId}`);
+        }
+
+        showAllBtn.addEventListener('click', () => {
+            filterStatusDiv.style.display = 'none';
+            cargarCitas('/api/citas');
+        });
+        function setMinDateTime() {
+            const ahora = new Date();
+            const unaHoraMas = new Date(ahora.getTime() + 3600 * 1000);
+            const offset = unaHoraMas.getTimezoneOffset();
+            const fechaLocal = new Date(unaHoraMas.getTime() - (offset * 60 * 1000));
+            fechaHoraInput.min = fechaLocal.toISOString().slice(0, 16);
+        }
+
+        function mostrarFormulario() {
+            setMinDateTime();
+            formContainer.style.display = 'block';
+        }
+
+        citaForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const mensajeDiv = document.getElementById('mensaje-form');
+            const data = {
+                nombre: document.getElementById('nombre').value, apellidos: document.getElementById('apellidos').value,
+                correo: document.getElementById('correo').value, telefono: document.getElementById('telefono').value,
+                direccion: document.getElementById('direccion').value, fechaHora: fechaHoraInput.value,
+                motivo: document.getElementById('motivo').value
+            };
+            try {
+                const response = await fetch('/api/citas', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                });
+                const resultado = await response.json();
+                if (response.ok) {
+                    mensajeDiv.textContent = '¡Cita creada con éxito!';
+                    mensajeDiv.className = 'exito';
+                    citaForm.reset();
+                    formContainer.style.display = 'none';
+                    await cargarCitas('/api/citas');
+                } else {
+                    mensajeDiv.textContent = ` Error: ${resultado.mensaje || 'No se pudo crear la cita.'}`;
+                    mensajeDiv.className = 'error';
+                }
+            } catch (error) {
+                mensajeDiv.textContent = ' Error de conexión con el servidor.';
+                mensajeDiv.className = 'error';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => cargarCitas());
+    </script>
+</body>
+
+</html>

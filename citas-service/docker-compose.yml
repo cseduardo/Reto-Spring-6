@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # Servicio de la base de datos PostgreSQL
+  postgres-db:
+    image: postgres:14
+    container_name: postgres-citas
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: M1P4$$w0rd53guR0
+      POSTGRES_DB: citas_db
+    ports:
+      - "5433:5432" # Expone el puerto de la BD a la maquina local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Servicio de la aplicación Spring Boot
+  citas-app:
+    build: . # Construye la imagen a partir del Dockerfile en el directorio actual
+    container_name: citas-microservice
+    depends_on:
+      - postgres-db # Espera a que la base de datos esté lista
+    ports:
+      - "8080:8080"
+    environment:
+      # Sobrescribe la URL de la BD para que apunte al contenedor de postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/citas_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: M1P4$$w0rd53guR0
+      # Espera a que la base de datos esté disponible antes de iniciar
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  postgres_data: # Volumen para persistir los datos de la BD
