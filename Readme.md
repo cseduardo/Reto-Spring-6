@@ -288,7 +288,71 @@ sequenceDiagram
     Frontend->>Frontend: Recarga la lista de citas (llama a cargarCitas())
     Frontend-->>-Admin: Muestra la tabla actualizada con el nuevo estado
 ```
+### 4.5 Diagrama de Flujo: Eliminar una Cita
 
+Descripción:Este diagrama ilustra el proceso completo que sigue el sistema cuando un administrador decide eliminar una cita. Muestra los pasos de confirmación en el frontend, las validaciones en el backend, la operación en la base de datos y la actualización final de la vista para el usuario.
+
+```mermaid
+graph TD;
+    A["👤 Admin ve la lista de citas en el panel"];
+    A --> B["Clic en el botón 'Eliminar' de una cita"];
+
+    subgraph "Frontend (Navegador)";
+        B --> C{"Muestra diálogo: '¿Estás seguro?'"};
+        C -- "Sí, eliminar" --> D["🚀 Petición DELETE a /api/citas/{id}"];
+        C -- "No, cancelar" --> E["Acción cancelada"];
+    end;
+
+    subgraph "Backend (Spring Boot)";
+        D --> F["🕹️ CitaController recibe la petición"];
+        F --> G{"¿Existe la cita con ese ID en la BD?"};
+        G -- No --> H["🔴 Retorna Error 404 Not Found"];
+        G -- Sí --> I["🗑️ Ordena al repositorio eliminar la cita por ID"];
+        I --> J["✅ Retorna Éxito 204 No Content (sin cuerpo)"];
+    end;
+
+    subgraph "Respuesta al Usuario";
+        H --> K["Frontend muestra alerta de error"];
+        J --> L["Frontend recibe la confirmación de éxito"];
+        L --> M["✨ Llama a la función para recargar la tabla de citas"];
+        M --> N["La cita eliminada desaparece de la lista"];
+    end;
+```
+
+### 4.6 Diagrama de Secuencia: Eliminar una Cita
+
+Descripción: Este diagrama modela la interacción cronológica y los mensajes pasados entre los componentes del sistema durante el proceso de eliminación. Es especialmente útil para ver las llamadas exactas entre el controlador, el repositorio y la base de datos.
+
+```mermaid
+sequenceDiagram;
+    participant Admin as 👤 Admin;
+    participant Frontend as 🌐 Navegador;
+    participant Controller as 🕹️ CitaController;
+    participant Repository as 💾 CitaRepository;
+    participant DB as 🗄️ PostgreSQL;
+
+    Admin->>+Frontend: Clic en botón 'Eliminar';
+    Frontend->>Frontend: Muestra confirm('¿Estás seguro?');
+    
+    alt Usuario confirma;
+        Frontend->>+Controller: DELETE /api/citas/{id};
+        Controller->>+Repository: existsById(id);
+        Repository->>+DB: SELECT 1 FROM citas WHERE id = ?;
+        DB-->>-Repository: Retorna true;
+        Repository-->>-Controller: Retorna true;
+
+        Controller->>+Repository: deleteById(id);
+        Repository->>+DB: DELETE FROM citas WHERE id = ?;
+        DB-->>-Repository: Confirmación de borrado;
+        Repository-->>-Controller: (void);
+        Controller-->>-Frontend: Respuesta 204 No Content;
+        
+        Frontend->>+Frontend: Llama a cargarCitas();
+        Frontend-->>-Admin: La tabla se actualiza sin la cita eliminada;
+    else Usuario cancela;
+        Frontend-->>-Admin: Cierra el diálogo, no pasa nada;
+    end;
+```
 ---
 
 ## 5. Trabajo Futuro y Mejoras Propuestas
