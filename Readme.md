@@ -14,7 +14,7 @@ Aplicación backend REST (Java y Spring Boot) para gestión de **citas** con aut
 ### Funcionamiento General Frontend
 El sistema opera como una aplicación web de página única (SPA) para el administrador. Tras una autenticación exitosa, el administrador accede a un panel donde puede visualizar, crear, modificar y eliminar citas. La interfaz es dinámica, se comunica con el backend a través de una API REST y se actualiza en tiempo real sin necesidad de recargar la página. La orquestación mediante Docker Compose permite levantar todo el entorno (backend y base de datos) con un único comando.
 
-### Reglas de Negocio Implementadas en el backend
+### Reglas de Negocio
 * Acceso Restringido: Solo los usuarios autenticados con el rol ADMIN pueden acceder a las funcionalidades de gestión de citas.
 
 * Unicidad de Clientes: Un cliente se considera único por su dirección de correo electrónico. Si se intenta crear una cita para un correo ya existente, el sistema reutiliza el cliente en lugar de crear un duplicado.
