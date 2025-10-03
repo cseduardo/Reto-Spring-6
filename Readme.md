@@ -46,7 +46,7 @@ La relación clave es entre Clientes y Citas, donde un cliente puede tener múlt
 * `citas.cliente_id` no puede ser NULL (relación ManyToOne obligatoria).
 * `usuarios.username` único.
 
-### 3.3 Diagrama Entidad-Relación (Mermaid)
+### 3.3 Diagrama Entidad-Relación
 
 ```mermaid
 erDiagram
@@ -210,7 +210,7 @@ graph TD;
     end
 ```
 
-### 4.3 Diagrama de Flujo: Creación de una Cita
+### 4.5 Diagrama de Flujo: Creación de una Cita
 
 Descripción: Este diagrama ilustra el flujo completo de eventos, desde la interacción del administrador en el frontend hasta el almacenamiento de los datos en la base de datos, incluyendo la lógica de validación.
 
@@ -241,7 +241,7 @@ graph TD
         P --> R[Frontend recarga la lista de citas y muestra la nueva];
     end
 ```
-### 4.4 Diagrama de Secuencia: Creación de una Nueva Cita
+### 4.6 Diagrama de Secuencia: Creación de una Nueva Cita
 
 Descripción: Este diagrama muestra la interacción cronológica entre los diferentes componentes del sistema cuando un administrador crea una nueva cita. Detalla cada paso, desde el envío del formulario en el frontend hasta las consultas y escrituras en la base de datos, incluyendo la lógica condicional para manejar clientes nuevos o existentes.
 
@@ -280,7 +280,7 @@ Descripción: Este diagrama muestra la interacción cronológica entre los difer
     Frontend->>+Frontend: Recarga la lista de citas;
     Frontend-->>-Admin: Muestra la nueva cita en la tabla;
 ```
-### 4.5 Diagrama de Flujo: Actualización de Estado de una Cita
+### 4.7 Diagrama de Flujo: Actualización de Estado de una Cita
 
 Descripción:Este diagrama de flujo detalla el proceso que se desencadena cuando el administrador cambia el estado de una cita en el panel (por ejemplo, de "PENDIENTE" a "COMPLETADA"). Muestra las validaciones, la interacción con la base de datos y la actualización final de la interfaz de usuario.
 
@@ -314,7 +314,7 @@ graph TD;
     end;
 ```
 
-### 4.6 Diagrama de Secuencia: Actualizar Estado de una Cita
+### 4.8 Diagrama de Secuencia: Actualizar Estado de una Cita
 
 Descripción: Modela la interacción paso a paso y en orden cronológico entre los componentes del sistema para un caso de uso específico: cuando el administrador cambia el estado de una cita desde la interfaz.
 
@@ -341,7 +341,7 @@ sequenceDiagram
     Frontend->>Frontend: Recarga la lista de citas (llama a cargarCitas())
     Frontend-->>-Admin: Muestra la tabla actualizada con el nuevo estado
 ```
-### 4.5 Diagrama de Flujo: Eliminar una Cita
+### 4.9 Diagrama de Flujo: Eliminar una Cita
 
 Descripción:Este diagrama ilustra el proceso completo que sigue el sistema cuando un administrador decide eliminar una cita. Muestra los pasos de confirmación en el frontend, las validaciones en el backend, la operación en la base de datos y la actualización final de la vista para el usuario.
 
@@ -372,7 +372,7 @@ graph TD;
     end;
 ```
 
-### 4.6 Diagrama de Secuencia: Eliminar una Cita
+### 4.10 Diagrama de Secuencia: Eliminar una Cita
 
 Descripción: Este diagrama modela la interacción cronológica y los mensajes pasados entre los componentes del sistema durante el proceso de eliminación. Es especialmente útil para ver las llamadas exactas entre el controlador, el repositorio y la base de datos.
 
