@@ -157,6 +157,59 @@ graph TD;
     style Admin fill:#f9f,stroke:#333,stroke-width:2px
 
 ```
+### 4.3 Diagrama de Componentes
+
+Descripción: Muestra cómo el sistema se divide en componentes de software y las dependencias entre ellos. Es útil para entender la estructura física del software.
+```mermaid
+graph TD;
+    subgraph "Navegador del Usuario";
+        Frontend["[index.html + JS]"];
+    end;
+
+    subgraph "Servidor de Aplicación (Docker)";
+        CitasService["[citas-service.jar]"];
+    end;
+
+    subgraph "Servidor de Base de Datos (Docker)";
+        PostgresDB["(PostgreSQL)"];
+    end;
+    
+    Frontend -- "API REST (HTTP)" --> CitasService;
+    CitasService -- "JDBC" --> PostgresDB;
+
+    style Frontend fill:#cde4ff;
+    style CitasService fill:#d5e8d4;
+    style PostgresDB fill:#ffe6cc;
+```
+### 4.4 Diagrama de Despliegue
+
+Descripción: Muestra la arquitectura física del sistema, es decir, el hardware y el software en tiempo de ejecución. Es perfecto para visualizar cómo se despliegan los contenedores.
+```mermaid
+graph TD;
+    subgraph "Máquina Host (PC o Servidor)";
+        direction LR;
+        subgraph "Docker Engine";
+            direction TB;
+            ContainerApp["Contenedor: citas-microservice"];
+            ContainerDB["Contenedor: postgres-citas"];
+        end;
+    end;
+    
+    Browser["🌐 Navegador Web"];
+    
+    ContainerApp -- "Puerto 8080" --> Browser;
+    ContainerApp -- "Red interna de Docker" --> ContainerDB;
+    
+    subgraph ContainerApp
+        artefacto["citas-service.jar"];
+        jre["OpenJDK 21 JRE"];
+    end
+    
+    subgraph ContainerDB
+        db["PostgreSQL Server"];
+    end
+```
+
 ### 4.3 Diagrama de Flujo: Creación de una Cita
 
 Descripción: Este diagrama ilustra el flujo completo de eventos, desde la interacción del administrador en el frontend hasta el almacenamiento de los datos en la base de datos, incluyendo la lógica de validación.
