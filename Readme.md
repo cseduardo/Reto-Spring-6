@@ -432,7 +432,7 @@ El proyecto actual presenta una base sólida y sigue buenas prácticas en cuanto
 
 ### Puntos Fuertes:
 
-* Stack Tecnológico Moderno: El uso de Spring Boot 6, Java 21 y Docker posiciona al proyecto a la vanguardia.
+* Stack Tecnológico Moderno: El uso de Spring Framework 6, Java 21 y Docker posiciona al proyecto a la vanguardia.
 
 * Arquitectura Desacoplada: La separación clara entre frontend, backend y base de datos permite un desarrollo y escalado independientes.
 
